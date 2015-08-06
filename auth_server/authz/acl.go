@@ -44,6 +44,10 @@ func (aa *aclAuthorizer) Authorize(ai *AuthRequestInfo) ([]string, error) {
 	return nil, NoMatch
 }
 
+func (aa *aclAuthorizer) Connect() error {
+	return nil
+}
+
 func (aa *aclAuthorizer) Stop() {
 	// Nothing to do.
 }

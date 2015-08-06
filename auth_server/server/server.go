@@ -73,6 +73,20 @@ func NewAuthServer(c *Config) (*AuthServer, error) {
 		}
 		as.authenticators = append(as.authenticators, la)
 	}
+	if c.RedisAuth != nil {
+		// authn
+		ra := authn.NewRedisAuth(c.RedisAuth)
+		if err := ra.Connect(); err != nil {
+			return nil, err
+		}
+		as.authenticators = append(as.authenticators, ra)
+		// authz
+		rau := authz.NewACLRedisAuthorizer(c.RedisAuth.Address, c.RedisAuth.KeyPrefix)
+		if err := rau.Connect(); err != nil {
+			return nil, err
+		}
+		as.authorizers = append(as.authorizers, rau)
+	}
 	return as, nil
 }
 

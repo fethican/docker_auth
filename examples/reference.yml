@@ -71,6 +71,16 @@ ldap_auth:
   base: "o=example.com"
   filter: "(&(uid=${account})(objectClass=person))"
 
+# Redis
+redis_auth:
+  # address of redis server including port number.
+  address: "localhost:6379"
+  # key prefix to use if redis is shared between multiple services.
+  # Using meaningful prefix is always a good idea.
+  # Prefix must end with a seperator of your choose. Otherwise,
+  # user name get concatinated with prefix.
+  key_prefix: "com:docker:hub:"
+
 # ACL specifies who can do what. If the match section of an entry matches the
 # request, the set of allowed actions will be applied to the token request
 # and a ticket will be issued only for those of the requested actions that are

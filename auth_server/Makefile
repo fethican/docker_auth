@@ -3,11 +3,14 @@
 all: build
 
 update-deps:
-	go get -v -u -f github.com/jteeuwen/go-bindata/... .
+	go get -v github.com/jteeuwen/go-bindata/... .
 
 build:
 	go generate ./...
 	go build
+
+release:
+	CGO_ENABLED=0 go build -a -tags netgo -installsuffix netgo
 
 docker-build: update-deps build
 	docker build -t cesanta/docker_auth -f Dockerfile .
