@@ -19,7 +19,8 @@ package authn
 import (
 	"fmt"
 
-	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/mediocregopher/radix.v2/pool"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,8 +30,8 @@ type RedisAuthConfig struct {
 }
 
 type redisAuth struct {
-	client *redis.Client
-	conf   *RedisAuthConfig
+	pool *pool.Pool
+	conf *RedisAuthConfig
 }
 
 func NewRedisAuth(c *RedisAuthConfig) *redisAuth {
@@ -39,7 +40,7 @@ func NewRedisAuth(c *RedisAuthConfig) *redisAuth {
 
 func (ra *redisAuth) Connect() error {
 	var err error
-	ra.client, err = redis.Dial("tcp", ra.conf.Address)
+	ra.pool, err = pool.New("tcp", ra.conf.Address, 10)
 
 	if err != nil {
 		return err
@@ -49,7 +50,13 @@ func (ra *redisAuth) Connect() error {
 }
 
 func (ra *redisAuth) Authenticate(user string, password PasswordString) (bool, error) {
-	pass, err := ra.client.Cmd("GET", ra.keyName("user", user)).Bytes()
+	client, err := ra.pool.Get()
+	if err != nil {
+		return false, err
+	}
+	defer ra.pool.Put(client)
+
+	pass, err := client.Cmd("GET", ra.keyName("user", user)).Bytes()
 	if err != nil {
 		return false, NoMatch
 	}
@@ -64,7 +71,7 @@ func (ra *redisAuth) Authenticate(user string, password PasswordString) (bool, e
 }
 
 func (ra *redisAuth) Stop() {
-	ra.client.Close()
+	ra.pool.Empty()
 }
 
 func (ra *redisAuth) Name() string {

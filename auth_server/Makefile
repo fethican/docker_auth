@@ -6,8 +6,8 @@ update-deps:
 	go get -v github.com/jteeuwen/go-bindata/... .
 
 build:
-	go generate ./...
-	go build
+	GO15VENDOREXPERIMENT=1 go generate ./...
+	GO15VENDOREXPERIMENT=1 go build
 
 release:
 	CGO_ENABLED=0 go build -a -tags netgo -installsuffix netgo

@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/mediocregopher/radix.v2/pool"
 )
 
 type aclRedisAuthorizer struct {
-	client     *redis.Client
+	pool       *pool.Pool
 	ServerAddr string
 	KeyPrefix  string
 }
@@ -24,7 +24,7 @@ func NewACLRedisAuthorizer(addr string, keyPrefix string) Authorizer {
 
 func (aa *aclRedisAuthorizer) Connect() error {
 	var err error
-	aa.client, err = redis.Dial("tcp", aa.ServerAddr)
+	aa.pool, err = pool.New("tcp", aa.ServerAddr, 10)
 
 	if err != nil {
 		return err
@@ -63,8 +63,13 @@ func parse(acl string) (ACLEntry, error) {
 }
 
 func (aa *aclRedisAuthorizer) Authorize(ai *AuthRequestInfo) ([]string, error) {
+	client, err := aa.pool.Get()
+	if err != nil {
+		return nil, err
+	}
+	defer aa.pool.Put(client)
 
-	acls, err := aa.client.Cmd("smembers", fmt.Sprintf("%s%s:%s", aa.KeyPrefix, "acl", ai.Account)).Array()
+	acls, err := client.Cmd("smembers", fmt.Sprintf("%s%s:%s", aa.KeyPrefix, "acl", ai.Account)).Array()
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +93,7 @@ func (aa *aclRedisAuthorizer) Authorize(ai *AuthRequestInfo) ([]string, error) {
 }
 
 func (aa *aclRedisAuthorizer) Stop() {
-	aa.client.Close()
+	aa.pool.Empty()
 }
 
 func (aa *aclRedisAuthorizer) Name() string {
