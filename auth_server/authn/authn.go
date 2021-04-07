@@ -38,8 +38,6 @@ type Authenticator interface {
 
 var NoMatch = errors.New("did not match any rule")
 
-//go:generate go-bindata -pkg authn -modtime 1 -mode 420 data/
-
 type PasswordString string
 
 func (ps PasswordString) String() string {
