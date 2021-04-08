@@ -22,6 +22,7 @@ require (
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/mediocregopher/radix.v2 v0.0.0-20181115013041-b67df6e626f9 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/tools/godep v0.0.0-20180126220526-ce0bfadeb516 // indirect
