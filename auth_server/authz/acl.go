@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/golang/glog"
+	"github.com/cesanta/glog"
 )
 
 type ACL []ACLEntry

@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"github.com/dchest/uniuri"
-	"github.com/golang/glog"
+	"github.com/cesanta/glog"
 	"github.com/syndtr/goleveldb/leveldb"
 	"golang.org/x/crypto/bcrypt"
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/golang/glog"
+	"github.com/cesanta/glog"
 	"github.com/mediocregopher/radix.v2/pool"
 )
 
